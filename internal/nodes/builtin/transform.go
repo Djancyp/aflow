@@ -10,15 +10,31 @@ import (
 // TransformNode maps selected fields from input to a new output object.
 // Config: {"fields": {"output_key": "path.to.input.field"}}
 // Dot-path notation; missing paths produce null.
-// Output: the mapped object.
 type TransformNode struct{}
 
 func (n *TransformNode) Metadata() interfaces.NodeMetadata {
 	return interfaces.NodeMetadata{
 		Type:        "transform",
 		Name:        "Transform",
-		Description: "Maps input fields to a new output object using dot-path notation",
+		Description: "Maps input fields to a new output object using dot-path notation. Use to reshape data between nodes.",
 		Version:     "1.0.0",
+		Category:    "logic",
+		InputSchema: map[string]any{
+			"type":     "object",
+			"required": []string{"fields"},
+			"properties": map[string]any{
+				"fields": map[string]any{
+					"type":                 "object",
+					"description":          "Map of output key names to input dot-paths",
+					"additionalProperties": map[string]any{"type": "string"},
+					"example":              map[string]any{"user_email": "body.email", "total": "body.results.count"},
+				},
+			},
+		},
+		OutputSchema: map[string]any{
+			"type":        "object",
+			"description": "Object containing the mapped fields",
+		},
 	}
 }
 

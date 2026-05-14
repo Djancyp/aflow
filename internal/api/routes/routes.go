@@ -19,6 +19,7 @@ func Register(
 	th *handlers.DataTableHandler,
 	mh *handlers.MCPHandler,
 	wbh *handlers.WebhookHandler,
+	nth *handlers.NodeTypeHandler,
 	authMW echo.MiddlewareFunc,
 ) {
 	e.Use(middleware.Recover())
@@ -69,6 +70,14 @@ func Register(
 	cr.GET("/:id", ch.Get)
 	cr.DELETE("/:id", ch.Delete)
 
+	// Node Types
+	nt := v1.Group("/node-types")
+	nt.GET("", nth.Catalog)
+	nt.POST("", nth.Create)
+	nt.GET("/:id", nth.Get)
+	nt.PUT("/:id", nth.Update)
+	nt.DELETE("/:id", nth.Delete)
+
 	// Data Tables
 	tb := v1.Group("/tables")
 	tb.POST("", th.CreateTable)
@@ -77,5 +86,6 @@ func Register(
 	tb.DELETE("/:id", th.DeleteTable)
 	tb.POST("/:id/rows", th.InsertRow)
 	tb.GET("/:id/rows", th.ListRows)
+	tb.PATCH("/:id/rows/:row_id", th.UpdateRow)
 	tb.DELETE("/:id/rows/:row_id", th.DeleteRow)
 }

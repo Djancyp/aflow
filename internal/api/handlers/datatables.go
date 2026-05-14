@@ -191,6 +191,33 @@ func (h *DataTableHandler) ListRows(c echo.Context) error {
 	return c.JSON(http.StatusOK, map[string]any{"data": resp, "count": len(resp)})
 }
 
+// UpdateRow handles PATCH /v1/tables/:id/rows/:row_id
+//
+//	@Summary     Update row
+//	@Description Replaces the JSON data of an existing row.
+//	@Tags        Data Tables
+//	@Accept      json
+//	@Produce     json
+//	@Param       X-Workspace-ID header   string       true "Workspace ID"
+//	@Param       id             path     string       true "Table UUID"
+//	@Param       row_id         path     string       true "Row UUID"
+//	@Param       request        body     insertRowReq true "New row data (replaces existing)"
+//	@Success     200            {object} rowResp
+//	@Failure     400,401,404    {object} ProblemDetail
+//	@Security    BearerAuth
+//	@Router      /v1/tables/{id}/rows/{row_id} [patch]
+func (h *DataTableHandler) UpdateRow(c echo.Context) error {
+	var req insertRowReq
+	if err := c.Bind(&req); err != nil {
+		return problem(c, http.StatusBadRequest, "invalid-request", "Invalid request body", err.Error())
+	}
+	row, err := h.svc.UpdateRow(c.Request().Context(), middleware.WorkspaceID(c), c.Param("id"), c.Param("row_id"), req.Data)
+	if err != nil {
+		return tableServiceErr(c, err)
+	}
+	return c.JSON(http.StatusOK, toRowResp(row))
+}
+
 // DeleteRow handles DELETE /v1/tables/:id/rows/:row_id
 //
 //	@Summary     Delete row

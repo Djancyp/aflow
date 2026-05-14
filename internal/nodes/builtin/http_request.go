@@ -22,8 +22,28 @@ func (n *HTTPRequestNode) Metadata() interfaces.NodeMetadata {
 	return interfaces.NodeMetadata{
 		Type:        "http-request",
 		Name:        "HTTP Request",
-		Description: "Makes an HTTP request to an external URL",
+		Description: "Makes an outbound HTTP request and returns the response. Supports {{input.*}} and {{credential.*}} templates.",
 		Version:     "1.0.0",
+		Category:    "core",
+		InputSchema: map[string]any{
+			"type":     "object",
+			"required": []string{"url"},
+			"properties": map[string]any{
+				"url":    map[string]any{"type": "string", "description": "Target URL"},
+				"method": map[string]any{"type": "string", "enum": []string{"GET", "POST", "PUT", "PATCH", "DELETE", "HEAD"}, "default": "GET"},
+				"headers": map[string]any{"type": "object", "description": "HTTP headers as key-value pairs",
+					"additionalProperties": map[string]any{"type": "string"}},
+				"body": map[string]any{"type": "string", "description": "Request body (JSON string or plain text)"},
+			},
+		},
+		OutputSchema: map[string]any{
+			"type": "object",
+			"properties": map[string]any{
+				"status_code": map[string]any{"type": "integer", "description": "HTTP status code"},
+				"headers":     map[string]any{"type": "object"},
+				"body":        map[string]any{"description": "Parsed JSON or raw string response body"},
+			},
+		},
 	}
 }
 
@@ -60,7 +80,7 @@ func (n *HTTPRequestNode) Execute(ctx context.Context, ec interfaces.ExecutionCo
 	}
 	defer resp.Body.Close()
 
-	respBody, err := io.ReadAll(io.LimitReader(resp.Body, 10<<20)) // 10 MB cap
+	respBody, err := io.ReadAll(io.LimitReader(resp.Body, 10<<20))
 	if err != nil {
 		return nil, fmt.Errorf("http-request: read response: %w", err)
 	}

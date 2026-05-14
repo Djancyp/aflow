@@ -199,3 +199,36 @@ func (q *Queries) ListDataTables(ctx context.Context, workspaceID string) ([]Dat
 	}
 	return items, nil
 }
+
+const updateDataTableRow = `-- name: UpdateDataTableRow :one
+UPDATE data_table_rows
+SET data = $4, updated_at = now()
+WHERE id = $1 AND table_id = $2 AND workspace_id = $3
+RETURNING id, table_id, workspace_id, data, created_at, updated_at
+`
+
+type UpdateDataTableRowParams struct {
+	ID          pgtype.UUID `json:"id"`
+	TableID     pgtype.UUID `json:"table_id"`
+	WorkspaceID string      `json:"workspace_id"`
+	Data        []byte      `json:"data"`
+}
+
+func (q *Queries) UpdateDataTableRow(ctx context.Context, arg UpdateDataTableRowParams) (DataTableRow, error) {
+	row := q.db.QueryRow(ctx, updateDataTableRow,
+		arg.ID,
+		arg.TableID,
+		arg.WorkspaceID,
+		arg.Data,
+	)
+	var i DataTableRow
+	err := row.Scan(
+		&i.ID,
+		&i.TableID,
+		&i.WorkspaceID,
+		&i.Data,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
+}

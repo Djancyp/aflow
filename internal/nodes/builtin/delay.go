@@ -16,8 +16,24 @@ func (n *DelayNode) Metadata() interfaces.NodeMetadata {
 	return interfaces.NodeMetadata{
 		Type:        "delay",
 		Name:        "Delay",
-		Description: "Pauses execution for a fixed duration and passes input through",
+		Description: "Pauses execution for a fixed duration and passes input through unchanged.",
 		Version:     "1.0.0",
+		Category:    "logic",
+		InputSchema: map[string]any{
+			"type": "object",
+			"properties": map[string]any{
+				"duration_ms": map[string]any{
+					"type":        "integer",
+					"minimum":     0,
+					"maximum":     30000,
+					"default":     1000,
+					"description": "Milliseconds to wait before continuing",
+				},
+			},
+		},
+		OutputSchema: map[string]any{
+			"description": "The original input passed through unchanged",
+		},
 	}
 }
 

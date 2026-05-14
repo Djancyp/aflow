@@ -13,8 +13,16 @@ func (n *NoOpNode) Metadata() interfaces.NodeMetadata {
 	return interfaces.NodeMetadata{
 		Type:        "no-op",
 		Name:        "No-Op",
-		Description: "Passes input through unchanged",
+		Description: "Passes input through unchanged. Useful as a placeholder node.",
 		Version:     "1.0.0",
+		Category:    "utility",
+		InputSchema: map[string]any{
+			"type":        "object",
+			"description": "Any input — passed through unchanged",
+		},
+		OutputSchema: map[string]any{
+			"description": "Same as input",
+		},
 	}
 }
 

@@ -13,6 +13,7 @@ import (
 	"github.com/djan/aflow/internal/nodes/registry"
 	"github.com/djan/aflow/internal/observability/metrics"
 	"github.com/djan/aflow/internal/runtime/engine"
+	"github.com/google/uuid"
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/codes"
@@ -26,15 +27,27 @@ type CredentialDecryptor interface {
 	Decrypt(ctx context.Context, workspaceID, credentialID string) (json.RawMessage, error)
 }
 
+// HTTPActionExecutor runs custom DB-backed HTTP-action node types.
+type HTTPActionExecutor interface {
+	Execute(ctx context.Context, workspaceID, nodeTypeID string, config map[string]any, input any) (any, error)
+}
+
 // Executor drives a full workflow execution: loads definition, runs DAG, persists state.
 type Executor struct {
-	repo      service.Repository
-	registry  *registry.Registry
-	credDecry CredentialDecryptor // may be nil if creds not configured
+	repo           service.Repository
+	registry       *registry.Registry
+	credDecry      CredentialDecryptor // may be nil if creds not configured
+	httpActionExec HTTPActionExecutor  // may be nil
 }
 
 func New(repo service.Repository, reg *registry.Registry, creds CredentialDecryptor) *Executor {
 	return &Executor{repo: repo, registry: reg, credDecry: creds}
+}
+
+// WithHTTPActionExecutor attaches the HTTP-action executor for custom node types.
+func (e *Executor) WithHTTPActionExecutor(h HTTPActionExecutor) *Executor {
+	e.httpActionExec = h
+	return e
 }
 
 // RunExecution loads the execution record, runs the DAG, and persists the final state.
@@ -182,7 +195,17 @@ func (e *Executor) runNode(ctx context.Context, exec *service.Execution, nc engi
 	)
 	defer span.End()
 
-	// Resolve $cred: references in config before passing to node.
+	// Custom DB-backed HTTP-action node (type is a UUID).
+	if isUUID(nc.Type) && e.httpActionExec != nil {
+		out, err := e.httpActionExec.Execute(ctx, exec.WorkspaceID, nc.Type, nc.Config, input)
+		if err != nil {
+			span.RecordError(err)
+			span.SetStatus(codes.Error, err.Error())
+		}
+		return out, err
+	}
+
+	// Resolve $cred: references in config before passing to built-in node.
 	resolvedConfig, err := e.resolveCredentials(ctx, exec.WorkspaceID, nc.Config)
 	if err != nil {
 		span.RecordError(err)
@@ -212,6 +235,11 @@ func (e *Executor) runNode(ctx context.Context, exec *service.Execution, nc engi
 		span.SetStatus(codes.Error, err.Error())
 	}
 	return out, err
+}
+
+func isUUID(s string) bool {
+	_, err := uuid.Parse(s)
+	return err == nil
 }
 
 // resolveCredentials replaces all "$cred:<uuid>" and "$cred:<uuid>.<field>"

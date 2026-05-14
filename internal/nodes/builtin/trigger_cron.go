@@ -9,16 +9,34 @@ import (
 )
 
 // CronTriggerNode fires on a schedule and emits trigger metadata downstream.
-// Config: {"schedule": "*/5 * * * *"}  (standard 5-field cron expression)
-// Output: {"triggered_at": "<RFC3339>", "schedule": "<expression>"}
+// Config: {"schedule": "*/5 * * * *"}
 type CronTriggerNode struct{}
 
 func (n *CronTriggerNode) Metadata() interfaces.NodeMetadata {
 	return interfaces.NodeMetadata{
 		Type:        "trigger.cron",
 		Name:        "Cron Trigger",
-		Description: "Triggered on a cron schedule. Emits trigger metadata downstream.",
+		Description: "Fires on a cron schedule. A River Queue job is registered on publish. The chain is self-sustaining until the workflow is deactivated.",
 		Version:     "1.0.0",
+		Category:    "trigger",
+		InputSchema: map[string]any{
+			"type":     "object",
+			"required": []string{"schedule"},
+			"properties": map[string]any{
+				"schedule": map[string]any{
+					"type":        "string",
+					"description": "5-field cron expression",
+					"example":     "0 9 * * 1-5",
+				},
+			},
+		},
+		OutputSchema: map[string]any{
+			"type": "object",
+			"properties": map[string]any{
+				"triggered_at": map[string]any{"type": "string", "format": "date-time"},
+				"schedule":     map[string]any{"type": "string"},
+			},
+		},
 	}
 }
 

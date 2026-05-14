@@ -33,6 +33,7 @@ func (r *Registry) Get(nodeType string) (interfaces.Node, error) {
 	return n, nil
 }
 
+// List returns metadata for all registered nodes (used by the unified catalog).
 func (r *Registry) List() []interfaces.NodeMetadata {
 	r.mu.RLock()
 	defer r.mu.RUnlock()

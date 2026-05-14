@@ -7,16 +7,28 @@ import (
 )
 
 // WebhookTriggerNode receives an inbound HTTP payload and passes it downstream.
-// The execution input (set from the webhook request body) flows through as output.
-// Config (optional): {"method": "POST", "content_type": "application/json"}
 type WebhookTriggerNode struct{}
 
 func (n *WebhookTriggerNode) Metadata() interfaces.NodeMetadata {
 	return interfaces.NodeMetadata{
 		Type:        "trigger.webhook",
 		Name:        "Webhook Trigger",
-		Description: "Triggered by an inbound HTTP request. Request body becomes execution input.",
+		Description: "Triggered by an inbound HTTP POST. The request body becomes the execution input. A webhook secret is auto-generated on publish.",
 		Version:     "1.0.0",
+		Category:    "trigger",
+		InputSchema: map[string]any{
+			"type": "object",
+			"properties": map[string]any{
+				"method": map[string]any{
+					"type":    "string",
+					"enum":    []string{"POST", "GET", "PUT"},
+					"default": "POST",
+				},
+			},
+		},
+		OutputSchema: map[string]any{
+			"description": "The HTTP request body passed through as-is",
+		},
 	}
 }
 

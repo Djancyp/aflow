@@ -9,15 +9,21 @@ import (
 
 	execsvc "github.com/djan/aflow/internal/executions/service"
 	mcpserver "github.com/djan/aflow/internal/mcp/server"
+	ntsvc "github.com/djan/aflow/internal/nodetypes/service"
 	wfsvc "github.com/djan/aflow/internal/workflows/service"
 )
 
 // Register adds all aflow tools to the server.
-func Register(s *mcpserver.Server, wf *wfsvc.Service, exec *execsvc.Service) {
+func Register(s *mcpserver.Server, wf *wfsvc.Service, exec *execsvc.Service, nt *ntsvc.Service) {
 	s.Register(listWorkflows(wf))
 	s.Register(executeWorkflow(exec, wf))
 	s.Register(getExecution(exec))
 	s.Register(getExecutionLogs(exec))
+	s.Register(listNodeTypes(nt))
+	s.Register(getNodeType(nt))
+	s.Register(createNodeType(nt))
+	s.Register(updateNodeType(nt))
+	s.Register(deleteNodeType(nt))
 }
 
 // listWorkflows lists active, published workflows in the workspace.

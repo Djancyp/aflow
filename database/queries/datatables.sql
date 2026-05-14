@@ -28,6 +28,12 @@ WHERE table_id = $1 AND workspace_id = $2
 ORDER BY created_at DESC
 LIMIT 1000;
 
+-- name: UpdateDataTableRow :one
+UPDATE data_table_rows
+SET data = $4, updated_at = now()
+WHERE id = $1 AND table_id = $2 AND workspace_id = $3
+RETURNING *;
+
 -- name: DeleteDataTableRow :exec
 DELETE FROM data_table_rows
 WHERE id = $1 AND table_id = $2 AND workspace_id = $3;

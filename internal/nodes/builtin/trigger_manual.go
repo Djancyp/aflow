@@ -7,15 +7,23 @@ import (
 )
 
 // ManualTriggerNode is a no-op trigger that documents manual API invocation.
-// The execution input flows through as this node's output.
 type ManualTriggerNode struct{}
 
 func (n *ManualTriggerNode) Metadata() interfaces.NodeMetadata {
 	return interfaces.NodeMetadata{
 		Type:        "trigger.manual",
 		Name:        "Manual Trigger",
-		Description: "Triggered via the REST API or MCP. Passes the execution input downstream.",
+		Description: "Triggered via the REST API or MCP tool. The execution input flows through as output.",
 		Version:     "1.0.0",
+		Category:    "trigger",
+		InputSchema: map[string]any{
+			"type":        "object",
+			"description": "Optional input payload sent at trigger time",
+			"properties":  map[string]any{},
+		},
+		OutputSchema: map[string]any{
+			"description": "The trigger input payload",
+		},
 	}
 }
 

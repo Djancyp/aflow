@@ -120,6 +120,32 @@ func (r *PGRepository) ListRows(ctx context.Context, workspaceID, tableID string
 	return out, nil
 }
 
+func (r *PGRepository) UpdateRow(ctx context.Context, workspaceID, tableID, rowID string, data json.RawMessage) (*service.Row, error) {
+	tblID, err := parseUUID(tableID)
+	if err != nil {
+		return nil, service.ErrNotFound
+	}
+	rowUUID, err := parseUUID(rowID)
+	if err != nil {
+		return nil, service.ErrRowNotFound
+	}
+	q := db.New(r.pool)
+	row, err := q.UpdateDataTableRow(ctx, db.UpdateDataTableRowParams{
+		ID:          rowUUID,
+		TableID:     tblID,
+		WorkspaceID: workspaceID,
+		Data:        []byte(data),
+	})
+	if errors.Is(err, pgx.ErrNoRows) {
+		return nil, service.ErrRowNotFound
+	}
+	if err != nil {
+		return nil, fmt.Errorf("update row: %w", err)
+	}
+	rv := toRow(row)
+	return &rv, nil
+}
+
 func (r *PGRepository) DeleteRow(ctx context.Context, workspaceID, tableID, rowID string) error {
 	tblID, err := parseUUID(tableID)
 	if err != nil {

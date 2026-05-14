@@ -13,6 +13,7 @@ import (
 	execrepo "github.com/djan/aflow/internal/executions/repository"
 	execsvc "github.com/djan/aflow/internal/executions/service"
 	"github.com/djan/aflow/internal/nodes/builtin"
+	"github.com/djan/aflow/internal/nodes/httpaction"
 	"github.com/djan/aflow/internal/nodes/registry"
 	_ "github.com/djan/aflow/internal/observability/metrics"
 	"github.com/djan/aflow/internal/observability/tracing"
@@ -54,13 +55,12 @@ func main() {
 	}
 	defer pool.Close()
 
-	// River client — used for both processing and inserting jobs (cron reschedule).
 	maxWorkers := cfg.Queue.Workers
 	if maxWorkers <= 0 {
 		maxWorkers = 4
 	}
 
-	// Node registry.
+	// Node registry with all built-ins.
 	reg := registry.New()
 	reg.Register(&builtin.ManualTriggerNode{})
 	reg.Register(&builtin.WebhookTriggerNode{})
@@ -71,27 +71,22 @@ func main() {
 	reg.Register(&builtin.ConditionNode{})
 	reg.Register(&builtin.TransformNode{})
 
-	// Repos and services (river client injected below after creation).
+	// HTTP-action executor for custom DB-backed node types.
+	// Credential decryptor is nil for now (pass credsvc if encryption is configured).
+	httpActionExec := httpaction.New(pool, nil)
+
 	execRepo := execrepo.New(pool)
 	wfRepo := wfrepo.New(pool)
 
-	// River workers and client built together since cron worker needs insert capability.
-	// We break the dependency by building riverClient first with a placeholder,
-	// then wrapping execution service after.
-	var riverClient *river.Client[pgx.Tx]
-
-	// execSvc wraps riverClient — we'll set it after riverClient is constructed.
-	// Use a late-binding wrapper to break the circular dep.
 	execSvcRef := &execSvcRef{}
+	schedRef := &schedulerRef{}
 
 	riverWorkers := river.NewWorkers()
-
-	sched := &schedulerRef{}
-
-	exec := executor.New(execRepo, reg, nil)
+	exec := executor.New(execRepo, reg, nil).WithHTTPActionExecutor(httpActionExec)
 	river.AddWorker(riverWorkers, workers.NewWorkflowExecuteWorker(exec))
-	river.AddWorker(riverWorkers, workers.NewCronTriggerWorker(execSvcRef, sched, wfRepo))
+	river.AddWorker(riverWorkers, workers.NewCronTriggerWorker(execSvcRef, schedRef, wfRepo))
 
+	var riverClient *river.Client[pgx.Tx]
 	riverClient, err = river.NewClient[pgx.Tx](riverpgxv5.New(pool), &river.Config{
 		Queues:  map[string]river.QueueConfig{river.QueueDefault: {MaxWorkers: maxWorkers}},
 		Workers: riverWorkers,
@@ -101,9 +96,8 @@ func main() {
 		os.Exit(1)
 	}
 
-	// Wire execSvc and scheduler now that riverClient is ready.
 	execSvcRef.svc = execsvc.New(execRepo, riverClient)
-	sched.scheduler = scheduler.New(riverClient)
+	schedRef.scheduler = scheduler.New(riverClient)
 
 	if err := riverClient.Start(ctx); err != nil {
 		slog.Error("river start failed", "err", err)
@@ -111,7 +105,6 @@ func main() {
 	}
 	slog.Info("aflow worker started", "max_workers", maxWorkers)
 
-	// Worker health + metrics HTTP server.
 	metricsAddr := fmt.Sprintf(":%d", cfg.Worker.MetricsPort)
 	mux := http.NewServeMux()
 	mux.Handle("/metrics", promhttp.Handler())
@@ -136,15 +129,12 @@ func main() {
 	slog.Info("worker stopped")
 }
 
-// execSvcRef is a late-binding wrapper so CronTriggerWorker can be created
-// before the execSvc (which needs riverClient, which needs workers).
 type execSvcRef struct{ svc *execsvc.Service }
 
 func (r *execSvcRef) ExecuteWithTrigger(ctx context.Context, wsID, wfID, trigger string, input json.RawMessage) (any, error) {
 	return r.svc.ExecuteWithTrigger(ctx, wsID, wfID, trigger, input)
 }
 
-// schedulerRef breaks the same circular dep for the cron rescheduler.
 type schedulerRef struct{ scheduler *scheduler.Scheduler }
 
 func (r *schedulerRef) ScheduleCron(ctx context.Context, wsID, wfID, schedule string) error {

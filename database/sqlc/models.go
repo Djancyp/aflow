@@ -67,6 +67,27 @@ type ExecutionLog struct {
 	CreatedAt   pgtype.Timestamp `json:"created_at"`
 }
 
+type NodeType struct {
+	ID              pgtype.UUID      `json:"id"`
+	WorkspaceID     string           `json:"workspace_id"`
+	Name            string           `json:"name"`
+	Description     *string          `json:"description"`
+	Category        string           `json:"category"`
+	Version         string           `json:"version"`
+	BaseUrl         string           `json:"base_url"`
+	Endpoint        string           `json:"endpoint"`
+	Method          string           `json:"method"`
+	ContentType     string           `json:"content_type"`
+	HeadersTemplate []byte           `json:"headers_template"`
+	BodyTemplate    *string          `json:"body_template"`
+	InputSchema     []byte           `json:"input_schema"`
+	OutputSchema    []byte           `json:"output_schema"`
+	CredentialID    pgtype.UUID      `json:"credential_id"`
+	Active          bool             `json:"active"`
+	CreatedAt       pgtype.Timestamp `json:"created_at"`
+	UpdatedAt       pgtype.Timestamp `json:"updated_at"`
+}
+
 type Workflow struct {
 	ID            pgtype.UUID      `json:"id"`
 	WorkspaceID   string           `json:"workspace_id"`

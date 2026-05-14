@@ -18,8 +18,25 @@ func (n *ConditionNode) Metadata() interfaces.NodeMetadata {
 	return interfaces.NodeMetadata{
 		Type:        "condition",
 		Name:        "Condition",
-		Description: "Evaluates a condition and emits {matched, input}",
+		Description: "Evaluates a boolean condition and emits {matched, input}. Downstream nodes can branch on matched.",
 		Version:     "1.0.0",
+		Category:    "logic",
+		InputSchema: map[string]any{
+			"type":     "object",
+			"required": []string{"field", "operator"},
+			"properties": map[string]any{
+				"field":    map[string]any{"type": "string", "description": "Dot-path to the field to test (e.g. body.status)"},
+				"operator": map[string]any{"type": "string", "enum": []string{"eq", "neq", "gt", "lt", "contains", "exists"}, "description": "Comparison operator"},
+				"value":    map[string]any{"description": "Value to compare against (not required for 'exists')"},
+			},
+		},
+		OutputSchema: map[string]any{
+			"type": "object",
+			"properties": map[string]any{
+				"matched": map[string]any{"type": "boolean", "description": "True when condition is satisfied"},
+				"input":   map[string]any{"description": "The original input, passed through unchanged"},
+			},
+		},
 	}
 }
 
@@ -52,11 +69,9 @@ func evaluate(actual any, operator string, expected any) (bool, error) {
 	case "contains":
 		return strings.Contains(fmt.Sprintf("%v", actual), fmt.Sprintf("%v", expected)), nil
 	case "gt":
-		a, b := toFloat(actual), toFloat(expected)
-		return a > b, nil
+		return toFloat(actual) > toFloat(expected), nil
 	case "lt":
-		a, b := toFloat(actual), toFloat(expected)
-		return a < b, nil
+		return toFloat(actual) < toFloat(expected), nil
 	default:
 		return false, fmt.Errorf("unknown operator: %q", operator)
 	}

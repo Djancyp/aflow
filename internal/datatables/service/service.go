@@ -48,6 +48,7 @@ type Repository interface {
 	ListTables(ctx context.Context, workspaceID string) ([]*Table, error)
 	DeleteTable(ctx context.Context, workspaceID, id string) error
 	InsertRow(ctx context.Context, in InsertRowInput) (*Row, error)
+	UpdateRow(ctx context.Context, workspaceID, tableID, rowID string, data json.RawMessage) (*Row, error)
 	ListRows(ctx context.Context, workspaceID, tableID string) ([]*Row, error)
 	DeleteRow(ctx context.Context, workspaceID, tableID, rowID string) error
 }
@@ -103,6 +104,16 @@ func (s *Service) ListRows(ctx context.Context, workspaceID, tableID string) ([]
 		return nil, err
 	}
 	return s.repo.ListRows(ctx, workspaceID, tableID)
+}
+
+func (s *Service) UpdateRow(ctx context.Context, workspaceID, tableID, rowID string, data json.RawMessage) (*Row, error) {
+	if _, err := s.repo.GetTable(ctx, workspaceID, tableID); err != nil {
+		return nil, err
+	}
+	if len(data) == 0 {
+		return nil, errors.New("row data is required")
+	}
+	return s.repo.UpdateRow(ctx, workspaceID, tableID, rowID, data)
 }
 
 func (s *Service) DeleteRow(ctx context.Context, workspaceID, tableID, rowID string) error {
