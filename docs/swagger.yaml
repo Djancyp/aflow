@@ -27,6 +27,42 @@ definitions:
         example: api-key
         type: string
     type: object
+  internal_api_handlers.createNodeTypeReq:
+    properties:
+      base_url:
+        example: https://slack.com/api
+        type: string
+      body_template:
+        example: '{"channel":"{{input.channel}}","text":"{{input.text}}"}'
+        type: string
+      category:
+        example: communication
+        type: string
+      content_type:
+        example: application/json
+        type: string
+      credential_id:
+        example: 550e8400-e29b-41d4-a716-446655440020
+        type: string
+      description:
+        example: Posts a message to a Slack channel
+        type: string
+      endpoint:
+        example: /chat.postMessage
+        type: string
+      headers_template:
+        type: object
+      input_schema:
+        type: object
+      method:
+        example: POST
+        type: string
+      name:
+        example: Send Slack Message
+        type: string
+      output_schema:
+        type: object
+    type: object
   internal_api_handlers.createTableReq:
     properties:
       name:
@@ -122,6 +158,57 @@ definitions:
     properties:
       data:
         type: object
+    type: object
+  internal_api_handlers.nodeTypeResp:
+    properties:
+      base_url:
+        example: https://slack.com/api
+        type: string
+      body_template:
+        type: string
+      category:
+        example: communication
+        type: string
+      content_type:
+        example: application/json
+        type: string
+      created_at:
+        example: "2025-01-01T00:00:00Z"
+        type: string
+      credential_id:
+        type: string
+      description:
+        type: string
+      endpoint:
+        example: /chat.postMessage
+        type: string
+      headers_template:
+        additionalProperties: {}
+        type: object
+      id:
+        example: 550e8400-e29b-41d4-a716-446655440050
+        type: string
+      input_schema:
+        additionalProperties: {}
+        type: object
+      method:
+        example: POST
+        type: string
+      name:
+        example: Send Slack Message
+        type: string
+      output_schema:
+        additionalProperties: {}
+        type: object
+      updated_at:
+        example: "2025-01-01T00:00:00Z"
+        type: string
+      version:
+        example: 1.0.0
+        type: string
+      workspace_id:
+        example: ws_prod
+        type: string
     type: object
   internal_api_handlers.publishWorkflowResp:
     properties:
@@ -564,6 +651,189 @@ paths:
       summary: Retry execution
       tags:
       - Executions
+  /v1/node-types:
+    get:
+      description: Returns all available node types (built-in + custom) with their
+        JSON Schemas. Supports ?q= search and ?category= filter.
+      parameters:
+      - description: Workspace ID
+        in: header
+        name: X-Workspace-ID
+        required: true
+        type: string
+      - description: Search by name or description
+        in: query
+        name: q
+        type: string
+      - description: Filter by category (trigger, core, logic, utility, communication,
+          ai, data, custom...)
+        in: query
+        name: category
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/internal_api_handlers.ProblemDetail'
+      security:
+      - BearerAuth: []
+      summary: List node type catalog
+      tags:
+      - Node Types
+    post:
+      consumes:
+      - application/json
+      description: Defines a new HTTP-action node type for this workspace. Once created,
+        its ID can be used as a node 'type' in workflow definitions.
+      parameters:
+      - description: Workspace ID
+        in: header
+        name: X-Workspace-ID
+        required: true
+        type: string
+      - description: Node type definition
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/internal_api_handlers.createNodeTypeReq'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/internal_api_handlers.nodeTypeResp'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/internal_api_handlers.ProblemDetail'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/internal_api_handlers.ProblemDetail'
+      security:
+      - BearerAuth: []
+      summary: Create custom node type
+      tags:
+      - Node Types
+  /v1/node-types/{id}:
+    delete:
+      description: Permanently deletes a custom node type. Existing workflow definitions
+        referencing it will fail at execution.
+      parameters:
+      - description: Workspace ID
+        in: header
+        name: X-Workspace-ID
+        required: true
+        type: string
+      - description: Node type UUID
+        in: path
+        name: id
+        required: true
+        type: string
+      responses:
+        "204":
+          description: No Content
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/internal_api_handlers.ProblemDetail'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/internal_api_handlers.ProblemDetail'
+      security:
+      - BearerAuth: []
+      summary: Delete node type
+      tags:
+      - Node Types
+    get:
+      description: Returns a single custom node type with full configuration.
+      parameters:
+      - description: Workspace ID
+        in: header
+        name: X-Workspace-ID
+        required: true
+        type: string
+      - description: Node type UUID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_api_handlers.nodeTypeResp'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/internal_api_handlers.ProblemDetail'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/internal_api_handlers.ProblemDetail'
+      security:
+      - BearerAuth: []
+      summary: Get node type
+      tags:
+      - Node Types
+    put:
+      consumes:
+      - application/json
+      description: Updates a custom node type definition. Changes affect future executions
+        only.
+      parameters:
+      - description: Workspace ID
+        in: header
+        name: X-Workspace-ID
+        required: true
+        type: string
+      - description: Node type UUID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Updated node type definition
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/internal_api_handlers.createNodeTypeReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_api_handlers.nodeTypeResp'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/internal_api_handlers.ProblemDetail'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/internal_api_handlers.ProblemDetail'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/internal_api_handlers.ProblemDetail'
+      security:
+      - BearerAuth: []
+      summary: Update node type
+      tags:
+      - Node Types
   /v1/tables:
     get:
       description: Returns all data tables in the workspace.
@@ -802,6 +1072,56 @@ paths:
       security:
       - BearerAuth: []
       summary: Delete row
+      tags:
+      - Data Tables
+    patch:
+      consumes:
+      - application/json
+      description: Replaces the JSON data of an existing row.
+      parameters:
+      - description: Workspace ID
+        in: header
+        name: X-Workspace-ID
+        required: true
+        type: string
+      - description: Table UUID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Row UUID
+        in: path
+        name: row_id
+        required: true
+        type: string
+      - description: New row data (replaces existing)
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/internal_api_handlers.insertRowReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_api_handlers.rowResp'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/internal_api_handlers.ProblemDetail'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/internal_api_handlers.ProblemDetail'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/internal_api_handlers.ProblemDetail'
+      security:
+      - BearerAuth: []
+      summary: Update row
       tags:
       - Data Tables
   /v1/workflows:
