@@ -1,0 +1,1223 @@
+basePath: /
+definitions:
+  internal_api_handlers.ProblemDetail:
+    description: RFC 7807 error envelope returned on all 4xx/5xx responses.
+    properties:
+      detail:
+        example: Workflow abc was not found
+        type: string
+      status:
+        example: 404
+        type: integer
+      title:
+        example: Not Found
+        type: string
+      type:
+        example: https://aflow.dev/errors/not-found
+        type: string
+    type: object
+  internal_api_handlers.createCredentialReq:
+    properties:
+      data:
+        type: object
+      name:
+        example: Slack Bot Token
+        type: string
+      type:
+        example: api-key
+        type: string
+    type: object
+  internal_api_handlers.createTableReq:
+    properties:
+      name:
+        example: contacts
+        type: string
+      schema:
+        type: object
+    type: object
+  internal_api_handlers.createWorkflowReq:
+    properties:
+      definition:
+        type: object
+      description:
+        example: Processes incoming emails
+        type: string
+      name:
+        example: Email Processor
+        type: string
+    type: object
+  internal_api_handlers.createWorkflowResp:
+    properties:
+      version:
+        $ref: '#/definitions/internal_api_handlers.versionResp'
+      workflow:
+        $ref: '#/definitions/internal_api_handlers.workflowResp'
+    type: object
+  internal_api_handlers.credentialResp:
+    properties:
+      created_at:
+        example: "2025-01-01T00:00:00Z"
+        type: string
+      id:
+        example: 550e8400-e29b-41d4-a716-446655440020
+        type: string
+      name:
+        example: Slack Bot Token
+        type: string
+      type:
+        example: api-key
+        type: string
+      workspace_id:
+        example: ws_prod
+        type: string
+    type: object
+  internal_api_handlers.executeReq:
+    properties:
+      input:
+        type: object
+    type: object
+  internal_api_handlers.executionResp:
+    properties:
+      created_at:
+        example: "2025-01-01T00:00:00Z"
+        type: string
+      error:
+        type: string
+      finished_at:
+        example: "2025-01-01T00:00:05Z"
+        type: string
+      id:
+        example: 550e8400-e29b-41d4-a716-446655440010
+        type: string
+      input:
+        type: object
+      output:
+        type: object
+      started_at:
+        example: "2025-01-01T00:00:01Z"
+        type: string
+      status:
+        example: queued
+        type: string
+      trigger_source:
+        example: api
+        type: string
+      workflow_id:
+        example: 550e8400-e29b-41d4-a716-446655440000
+        type: string
+      workflow_version_id:
+        example: 550e8400-e29b-41d4-a716-446655440001
+        type: string
+      workspace_id:
+        example: ws_prod
+        type: string
+    type: object
+  internal_api_handlers.healthResp:
+    properties:
+      status:
+        example: ok
+        type: string
+    type: object
+  internal_api_handlers.insertRowReq:
+    properties:
+      data:
+        type: object
+    type: object
+  internal_api_handlers.publishWorkflowResp:
+    properties:
+      version:
+        $ref: '#/definitions/internal_api_handlers.versionResp'
+      webhook_url:
+        example: /webhooks/uuid?secret=whsec_...
+        type: string
+      workflow:
+        $ref: '#/definitions/internal_api_handlers.workflowResp'
+    type: object
+  internal_api_handlers.rowResp:
+    properties:
+      created_at:
+        example: "2025-01-01T00:00:00Z"
+        type: string
+      data:
+        type: object
+      id:
+        example: 550e8400-e29b-41d4-a716-446655440031
+        type: string
+      table_id:
+        example: 550e8400-e29b-41d4-a716-446655440030
+        type: string
+      updated_at:
+        example: "2025-01-01T00:00:00Z"
+        type: string
+      workspace_id:
+        example: ws_prod
+        type: string
+    type: object
+  internal_api_handlers.tableResp:
+    properties:
+      created_at:
+        example: "2025-01-01T00:00:00Z"
+        type: string
+      id:
+        example: 550e8400-e29b-41d4-a716-446655440030
+        type: string
+      name:
+        example: contacts
+        type: string
+      schema:
+        type: object
+      workspace_id:
+        example: ws_prod
+        type: string
+    type: object
+  internal_api_handlers.updateWorkflowReq:
+    properties:
+      description:
+        example: Updated description
+        type: string
+      name:
+        example: Email Processor v2
+        type: string
+    type: object
+  internal_api_handlers.versionResp:
+    properties:
+      created_at:
+        example: "2025-01-01T00:00:00Z"
+        type: string
+      definition:
+        type: object
+      id:
+        example: 550e8400-e29b-41d4-a716-446655440001
+        type: string
+      published:
+        example: true
+        type: boolean
+      version:
+        example: 1
+        type: integer
+      workflow_id:
+        example: 550e8400-e29b-41d4-a716-446655440000
+        type: string
+    type: object
+  internal_api_handlers.webhookTriggerResp:
+    properties:
+      execution_id:
+        example: 550e8400-e29b-41d4-a716-446655440010
+        type: string
+      status:
+        example: queued
+        type: string
+    type: object
+  internal_api_handlers.workflowResp:
+    properties:
+      active:
+        example: true
+        type: boolean
+      created_at:
+        example: "2025-01-01T00:00:00Z"
+        type: string
+      description:
+        type: string
+      id:
+        example: 550e8400-e29b-41d4-a716-446655440000
+        type: string
+      latest_version:
+        example: 1
+        type: integer
+      name:
+        example: Email Processor
+        type: string
+      updated_at:
+        example: "2025-01-01T00:00:00Z"
+        type: string
+      workspace_id:
+        example: ws_prod
+        type: string
+    type: object
+host: localhost:8080
+info:
+  contact: {}
+  description: AI-native headless workflow automation platform. DAG execution, MCP-native,
+    queue-based.
+  title: aflow API
+  version: 1.0.0
+paths:
+  /health:
+    get:
+      description: Returns {"status":"ok"} when the server is up.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_api_handlers.healthResp'
+      summary: Health check
+      tags:
+      - System
+  /v1/credentials:
+    get:
+      description: Returns credential metadata only. Encrypted data is never returned.
+      parameters:
+      - description: Workspace ID
+        in: header
+        name: X-Workspace-ID
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/internal_api_handlers.ProblemDetail'
+      security:
+      - BearerAuth: []
+      summary: List credentials
+      tags:
+      - Credentials
+    post:
+      consumes:
+      - application/json
+      description: Encrypts and stores a credential. The raw data is never returned
+        after this call.
+      parameters:
+      - description: Workspace ID
+        in: header
+        name: X-Workspace-ID
+        required: true
+        type: string
+      - description: Credential data (encrypted at rest)
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/internal_api_handlers.createCredentialReq'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/internal_api_handlers.credentialResp'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/internal_api_handlers.ProblemDetail'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/internal_api_handlers.ProblemDetail'
+      security:
+      - BearerAuth: []
+      summary: Create credential
+      tags:
+      - Credentials
+  /v1/credentials/{id}:
+    delete:
+      description: Permanently deletes a credential and its encrypted data.
+      parameters:
+      - description: Workspace ID
+        in: header
+        name: X-Workspace-ID
+        required: true
+        type: string
+      - description: Credential UUID
+        in: path
+        name: id
+        required: true
+        type: string
+      responses:
+        "204":
+          description: No Content
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/internal_api_handlers.ProblemDetail'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/internal_api_handlers.ProblemDetail'
+      security:
+      - BearerAuth: []
+      summary: Delete credential
+      tags:
+      - Credentials
+    get:
+      description: Returns metadata for a single credential. Never returns encrypted
+        data.
+      parameters:
+      - description: Workspace ID
+        in: header
+        name: X-Workspace-ID
+        required: true
+        type: string
+      - description: Credential UUID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_api_handlers.credentialResp'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/internal_api_handlers.ProblemDetail'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/internal_api_handlers.ProblemDetail'
+      security:
+      - BearerAuth: []
+      summary: Get credential
+      tags:
+      - Credentials
+  /v1/executions:
+    get:
+      description: Returns executions for the workspace, newest first. Supports limit/offset
+        pagination.
+      parameters:
+      - description: Workspace ID
+        in: header
+        name: X-Workspace-ID
+        required: true
+        type: string
+      - description: Max results (default 20, max 100)
+        in: query
+        name: limit
+        type: integer
+      - description: Offset for pagination
+        in: query
+        name: offset
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/internal_api_handlers.ProblemDetail'
+      security:
+      - BearerAuth: []
+      summary: List executions
+      tags:
+      - Executions
+  /v1/executions/{id}:
+    get:
+      description: Returns the status and details of a single execution.
+      parameters:
+      - description: Workspace ID
+        in: header
+        name: X-Workspace-ID
+        required: true
+        type: string
+      - description: Execution UUID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_api_handlers.executionResp'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/internal_api_handlers.ProblemDetail'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/internal_api_handlers.ProblemDetail'
+      security:
+      - BearerAuth: []
+      summary: Get execution
+      tags:
+      - Executions
+  /v1/executions/{id}/cancel:
+    post:
+      description: Cancels an execution that is still pending or queued.
+      parameters:
+      - description: Workspace ID
+        in: header
+        name: X-Workspace-ID
+        required: true
+        type: string
+      - description: Execution UUID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_api_handlers.executionResp'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/internal_api_handlers.ProblemDetail'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/internal_api_handlers.ProblemDetail'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/internal_api_handlers.ProblemDetail'
+      security:
+      - BearerAuth: []
+      summary: Cancel execution
+      tags:
+      - Executions
+  /v1/executions/{id}/logs:
+    get:
+      description: Returns structured per-node logs for an execution, in chronological
+        order.
+      parameters:
+      - description: Workspace ID
+        in: header
+        name: X-Workspace-ID
+        required: true
+        type: string
+      - description: Execution UUID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/internal_api_handlers.ProblemDetail'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/internal_api_handlers.ProblemDetail'
+      security:
+      - BearerAuth: []
+      summary: Get execution logs
+      tags:
+      - Executions
+  /v1/executions/{id}/retry:
+    post:
+      description: Creates a new execution from the same workflow and input as the
+        original.
+      parameters:
+      - description: Workspace ID
+        in: header
+        name: X-Workspace-ID
+        required: true
+        type: string
+      - description: Original execution UUID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "202":
+          description: Accepted
+          schema:
+            $ref: '#/definitions/internal_api_handlers.executionResp'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/internal_api_handlers.ProblemDetail'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/internal_api_handlers.ProblemDetail'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/internal_api_handlers.ProblemDetail'
+      security:
+      - BearerAuth: []
+      summary: Retry execution
+      tags:
+      - Executions
+  /v1/tables:
+    get:
+      description: Returns all data tables in the workspace.
+      parameters:
+      - description: Workspace ID
+        in: header
+        name: X-Workspace-ID
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/internal_api_handlers.ProblemDetail'
+      security:
+      - BearerAuth: []
+      summary: List tables
+      tags:
+      - Data Tables
+    post:
+      consumes:
+      - application/json
+      description: Creates a data table with an optional JSON schema.
+      parameters:
+      - description: Workspace ID
+        in: header
+        name: X-Workspace-ID
+        required: true
+        type: string
+      - description: Table definition
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/internal_api_handlers.createTableReq'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/internal_api_handlers.tableResp'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/internal_api_handlers.ProblemDetail'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/internal_api_handlers.ProblemDetail'
+      security:
+      - BearerAuth: []
+      summary: Create table
+      tags:
+      - Data Tables
+  /v1/tables/{id}:
+    delete:
+      description: Permanently deletes a table and all its rows.
+      parameters:
+      - description: Workspace ID
+        in: header
+        name: X-Workspace-ID
+        required: true
+        type: string
+      - description: Table UUID
+        in: path
+        name: id
+        required: true
+        type: string
+      responses:
+        "204":
+          description: No Content
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/internal_api_handlers.ProblemDetail'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/internal_api_handlers.ProblemDetail'
+      security:
+      - BearerAuth: []
+      summary: Delete table
+      tags:
+      - Data Tables
+    get:
+      description: Returns a single data table with its schema.
+      parameters:
+      - description: Workspace ID
+        in: header
+        name: X-Workspace-ID
+        required: true
+        type: string
+      - description: Table UUID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_api_handlers.tableResp'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/internal_api_handlers.ProblemDetail'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/internal_api_handlers.ProblemDetail'
+      security:
+      - BearerAuth: []
+      summary: Get table
+      tags:
+      - Data Tables
+  /v1/tables/{id}/rows:
+    get:
+      description: Returns up to 1000 rows from the table, newest first.
+      parameters:
+      - description: Workspace ID
+        in: header
+        name: X-Workspace-ID
+        required: true
+        type: string
+      - description: Table UUID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/internal_api_handlers.ProblemDetail'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/internal_api_handlers.ProblemDetail'
+      security:
+      - BearerAuth: []
+      summary: List rows
+      tags:
+      - Data Tables
+    post:
+      consumes:
+      - application/json
+      description: Inserts a JSON row into a data table.
+      parameters:
+      - description: Workspace ID
+        in: header
+        name: X-Workspace-ID
+        required: true
+        type: string
+      - description: Table UUID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Row data
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/internal_api_handlers.insertRowReq'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/internal_api_handlers.rowResp'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/internal_api_handlers.ProblemDetail'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/internal_api_handlers.ProblemDetail'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/internal_api_handlers.ProblemDetail'
+      security:
+      - BearerAuth: []
+      summary: Insert row
+      tags:
+      - Data Tables
+  /v1/tables/{id}/rows/{row_id}:
+    delete:
+      description: Permanently deletes a single row.
+      parameters:
+      - description: Workspace ID
+        in: header
+        name: X-Workspace-ID
+        required: true
+        type: string
+      - description: Table UUID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Row UUID
+        in: path
+        name: row_id
+        required: true
+        type: string
+      responses:
+        "204":
+          description: No Content
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/internal_api_handlers.ProblemDetail'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/internal_api_handlers.ProblemDetail'
+      security:
+      - BearerAuth: []
+      summary: Delete row
+      tags:
+      - Data Tables
+  /v1/workflows:
+    get:
+      description: Returns all workflows in the workspace.
+      parameters:
+      - description: Workspace ID
+        in: header
+        name: X-Workspace-ID
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/internal_api_handlers.ProblemDetail'
+      security:
+      - BearerAuth: []
+      summary: List workflows
+      tags:
+      - Workflows
+    post:
+      consumes:
+      - application/json
+      description: Creates a new workflow with an initial version (definition required).
+      parameters:
+      - description: Workspace ID
+        in: header
+        name: X-Workspace-ID
+        required: true
+        type: string
+      - description: Workflow definition
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/internal_api_handlers.createWorkflowReq'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/internal_api_handlers.createWorkflowResp'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/internal_api_handlers.ProblemDetail'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/internal_api_handlers.ProblemDetail'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/internal_api_handlers.ProblemDetail'
+      security:
+      - BearerAuth: []
+      summary: Create workflow
+      tags:
+      - Workflows
+  /v1/workflows/{id}:
+    delete:
+      description: Permanently deletes a workflow and all its versions and executions.
+      parameters:
+      - description: Workspace ID
+        in: header
+        name: X-Workspace-ID
+        required: true
+        type: string
+      - description: Workflow UUID
+        in: path
+        name: id
+        required: true
+        type: string
+      responses:
+        "204":
+          description: No Content
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/internal_api_handlers.ProblemDetail'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/internal_api_handlers.ProblemDetail'
+      security:
+      - BearerAuth: []
+      summary: Delete workflow
+      tags:
+      - Workflows
+    get:
+      description: Returns a single workflow by ID.
+      parameters:
+      - description: Workspace ID
+        in: header
+        name: X-Workspace-ID
+        required: true
+        type: string
+      - description: Workflow UUID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_api_handlers.workflowResp'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/internal_api_handlers.ProblemDetail'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/internal_api_handlers.ProblemDetail'
+      security:
+      - BearerAuth: []
+      summary: Get workflow
+      tags:
+      - Workflows
+    put:
+      consumes:
+      - application/json
+      description: Updates name and description. Does not change the definition.
+      parameters:
+      - description: Workspace ID
+        in: header
+        name: X-Workspace-ID
+        required: true
+        type: string
+      - description: Workflow UUID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Fields to update
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/internal_api_handlers.updateWorkflowReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_api_handlers.workflowResp'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/internal_api_handlers.ProblemDetail'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/internal_api_handlers.ProblemDetail'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/internal_api_handlers.ProblemDetail'
+      security:
+      - BearerAuth: []
+      summary: Update workflow
+      tags:
+      - Workflows
+  /v1/workflows/{id}/deactivate:
+    post:
+      description: Sets active=false. Stops cron chains and rejects webhook triggers.
+      parameters:
+      - description: Workspace ID
+        in: header
+        name: X-Workspace-ID
+        required: true
+        type: string
+      - description: Workflow UUID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_api_handlers.workflowResp'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/internal_api_handlers.ProblemDetail'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/internal_api_handlers.ProblemDetail'
+      security:
+      - BearerAuth: []
+      summary: Deactivate workflow
+      tags:
+      - Workflows
+  /v1/workflows/{id}/execute:
+    post:
+      consumes:
+      - application/json
+      description: Creates an execution and enqueues it for async processing.
+      parameters:
+      - description: Workspace ID
+        in: header
+        name: X-Workspace-ID
+        required: true
+        type: string
+      - description: Workflow UUID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Optional input data
+        in: body
+        name: request
+        schema:
+          $ref: '#/definitions/internal_api_handlers.executeReq'
+      produces:
+      - application/json
+      responses:
+        "202":
+          description: Accepted
+          schema:
+            $ref: '#/definitions/internal_api_handlers.executionResp'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/internal_api_handlers.ProblemDetail'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/internal_api_handlers.ProblemDetail'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/internal_api_handlers.ProblemDetail'
+      security:
+      - BearerAuth: []
+      summary: Execute workflow
+      tags:
+      - Executions
+  /v1/workflows/{id}/executions:
+    get:
+      description: Returns all executions for a specific workflow, newest first.
+      parameters:
+      - description: Workspace ID
+        in: header
+        name: X-Workspace-ID
+        required: true
+        type: string
+      - description: Workflow UUID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/internal_api_handlers.ProblemDetail'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/internal_api_handlers.ProblemDetail'
+      security:
+      - BearerAuth: []
+      summary: List executions for a workflow
+      tags:
+      - Executions
+  /v1/workflows/{id}/publish:
+    post:
+      description: Validates the definition, marks the latest version published, sets
+        active=true, and activates its trigger (cron or webhook).
+      parameters:
+      - description: Workspace ID
+        in: header
+        name: X-Workspace-ID
+        required: true
+        type: string
+      - description: Workflow UUID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_api_handlers.publishWorkflowResp'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/internal_api_handlers.ProblemDetail'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/internal_api_handlers.ProblemDetail'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/internal_api_handlers.ProblemDetail'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/internal_api_handlers.ProblemDetail'
+      security:
+      - BearerAuth: []
+      summary: Publish workflow
+      tags:
+      - Workflows
+  /v1/workflows/{id}/versions:
+    get:
+      description: Returns all immutable versions of a workflow, newest first.
+      parameters:
+      - description: Workspace ID
+        in: header
+        name: X-Workspace-ID
+        required: true
+        type: string
+      - description: Workflow UUID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/internal_api_handlers.ProblemDetail'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/internal_api_handlers.ProblemDetail'
+      security:
+      - BearerAuth: []
+      summary: List workflow versions
+      tags:
+      - Workflows
+  /webhooks/{workflow_id}:
+    post:
+      consumes:
+      - application/json
+      description: Triggers a workflow execution via webhook. Authenticate with the
+        secret from the publish response.
+      parameters:
+      - description: Workflow UUID
+        in: path
+        name: workflow_id
+        required: true
+        type: string
+      - description: Webhook secret (alternative to X-Webhook-Secret header)
+        in: query
+        name: secret
+        type: string
+      - description: Optional JSON payload (becomes execution input)
+        in: body
+        name: body
+        schema:
+          additionalProperties: true
+          type: object
+      produces:
+      - application/json
+      responses:
+        "202":
+          description: Accepted
+          schema:
+            $ref: '#/definitions/internal_api_handlers.webhookTriggerResp'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/internal_api_handlers.ProblemDetail'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/internal_api_handlers.ProblemDetail'
+      summary: Webhook trigger
+      tags:
+      - System
+schemes:
+- http
+- https
+securityDefinitions:
+  BearerAuth:
+    description: 'JWT (HS256, claim: workspace_id) or aflow_ API key. Set AFLOW_AUTH_DISABLED=true
+      to skip in dev.'
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"
